@@ -1,0 +1,55 @@
+@page
+@model Kanban.Web.Pages.Cards.DetailModel
+@{ ViewData["Title"] = Model.Card.Title; }
+
+<div style="padding:1rem;max-width:900px">
+    <p style="color:var(--tn-muted)">
+        <a href="/">&larr; Board</a> ·
+        @Model.Card.Project?.Name ·
+        @Model.Card.Status
+        @if (Model.Card.Outcome is not null)
+        {
+            <span class="badge @Model.Card.Outcome.ToString()!.ToLowerInvariant()">@Model.Card.Outcome</span>
+        }
+        @if (Model.Card.BranchName is not null)
+        {
+            <span> · <code>@Model.Card.BranchName</code></span>
+        }
+    </p>
+
+    <h2>@Model.Card.Title <a href="/Cards/Edit?id=@Model.Card.Id" style="font-size:.8rem">edit</a></h2>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Card.Description))
+    {
+        <pre style="white-space:pre-wrap;background:var(--tn-surface);border:1px solid var(--tn-border);border-radius:8px;padding:.75rem">@Model.Card.Description</pre>
+    }
+
+    <h3>Notes</h3>
+    @if (Model.Card.Notes.Count == 0)
+    {
+        <p style="color:var(--tn-muted)">No notes yet.</p>
+    }
+    @foreach (var note in Model.Card.Notes)
+    {
+        <div style="background:var(--tn-surface);border:1px solid var(--tn-border);border-left:3px solid @(note.Author == Kanban.Core.Enums.NoteAuthor.Agent ? "var(--tn-magenta)" : "var(--tn-blue)");border-radius:8px;padding:.6rem .75rem;margin-bottom:.5rem">
+            <div style="color:var(--tn-muted);font-size:.78rem">@note.Author · @note.CreatedUtc.ToLocalTime().ToString("g")</div>
+            <div style="white-space:pre-wrap">@note.Body</div>
+        </div>
+    }
+
+    @if (Model.Error is not null)
+    {
+        <p style="color:var(--tn-red)">@Model.Error</p>
+    }
+
+    <form method="post" style="display:flex;flex-direction:column;gap:.5rem;margin-top:1rem">
+        <textarea asp-for="NoteBody" rows="4" placeholder="Add a note. Notes are included in the agent's next run."></textarea>
+        <div style="display:flex;gap:.5rem">
+            <button type="submit" asp-page-handler="Note">Add note</button>
+            @if (Model.Card.Status == Kanban.Core.Enums.CardStatus.Review)
+            {
+                <button type="submit" asp-page-handler="SendBack">Add note and send back to Ready</button>
+            }
+        </div>
+    </form>
+</div>
