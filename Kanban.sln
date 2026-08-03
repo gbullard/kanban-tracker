@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{EB618093-ABE1-45B9-86E5-2D9C1516CE76}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kanban.Core", "src\Kanban.Core\Kanban.Core.csproj", "{1C0EDCC3-6AAA-4E59-BF87-41888ADBC52F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{49DD6FF6-F582-4AF6-84A2-8C46EB08E149}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kanban.Core.Tests", "tests\Kanban.Core.Tests\Kanban.Core.Tests.csproj", "{10E92E75-3077-4D19-BA40-41B7F46CFF3F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1C0EDCC3-6AAA-4E59-BF87-41888ADBC52F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C0EDCC3-6AAA-4E59-BF87-41888ADBC52F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C0EDCC3-6AAA-4E59-BF87-41888ADBC52F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C0EDCC3-6AAA-4E59-BF87-41888ADBC52F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10E92E75-3077-4D19-BA40-41B7F46CFF3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10E92E75-3077-4D19-BA40-41B7F46CFF3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10E92E75-3077-4D19-BA40-41B7F46CFF3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10E92E75-3077-4D19-BA40-41B7F46CFF3F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1C0EDCC3-6AAA-4E59-BF87-41888ADBC52F} = {EB618093-ABE1-45B9-86E5-2D9C1516CE76}
+		{10E92E75-3077-4D19-BA40-41B7F46CFF3F} = {49DD6FF6-F582-4AF6-84A2-8C46EB08E149}
+	EndGlobalSection
+EndGlobal
