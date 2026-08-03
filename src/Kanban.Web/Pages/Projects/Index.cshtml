@@ -1,0 +1,41 @@
+@page
+@model Kanban.Web.Pages.Projects.IndexModel
+@{ ViewData["Title"] = "Projects"; }
+
+<div style="padding:1rem;max-width:900px">
+    <h2>Projects</h2>
+
+    @if (Model.Error is not null)
+    {
+        <p style="color:var(--tn-red)">@Model.Error</p>
+    }
+
+    <form method="post" asp-page-handler="Add" style="display:flex;gap:.5rem;margin:1rem 0">
+        <input asp-for="Name" placeholder="Name" style="flex:0 0 200px" />
+        <input asp-for="Path" placeholder="C:\Repos\something" style="flex:1" />
+        <button type="submit">Add</button>
+    </form>
+
+    <table style="width:100%;border-collapse:collapse">
+        <thead>
+            <tr style="text-align:left;color:var(--tn-muted)">
+                <th>Name</th><th>Path</th><th>Active</th><th></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var p in Model.Projects)
+        {
+            <tr style="border-top:1px solid var(--tn-border)">
+                <td>@p.Name</td>
+                <td style="color:var(--tn-muted)">@p.Path</td>
+                <td>@(p.IsActive ? "yes" : "no")</td>
+                <td>
+                    <form method="post" asp-page-handler="Toggle" asp-route-id="@p.Id">
+                        <button type="submit">@(p.IsActive ? "Deactivate" : "Activate")</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
