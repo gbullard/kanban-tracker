@@ -6,5 +6,6 @@ artifacts/
 *.suo
 appsettings.*.local.json
 .kanban/
-docs/
+docs/*
+!docs/deployment.md
 .crush/
