@@ -15,9 +15,12 @@
     <a href="/Cards/Edit">+ New card</a>
 }
 
-<div class="board">
-    @foreach (var column in Model.Columns)
-    {
-        <partial name="_Column" model="column" />
-    }
+@Html.AntiForgeryToken()
+<div class="board" id="board">
+    <partial name="_Board" model="Model.Columns" />
 </div>
+
+@section Scripts {
+    <script src="~/lib/sortable/Sortable.min.js"></script>
+    <script src="~/js/board.js"></script>
+}

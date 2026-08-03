@@ -36,6 +36,25 @@ public class IndexModel : PageModel
         (CardStatus.Completed, "Completed")
     };
 
+    public record MoveRequest(int CardId, string TargetStatus, int[] OrderedCardIds, string? Note);
+
+    public async Task<IActionResult> OnPostMoveAsync([FromBody] MoveRequest request, CancellationToken ct)
+    {
+        if (!Enum.TryParse<CardStatus>(request.TargetStatus, out var target))
+        {
+            return BadRequest($"Unknown column '{request.TargetStatus}'.");
+        }
+
+        var result = await _board.MoveAsync(request.CardId, target, request.OrderedCardIds, request.Note, ct);
+        if (!result.Success)
+        {
+            return BadRequest(result.Error!);
+        }
+
+        await OnGetAsync(ct);
+        return Partial("_Board", Columns);
+    }
+
     public async Task OnGetAsync(CancellationToken ct)
     {
         Projects = await _db.Projects.AsNoTracking()

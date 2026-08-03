@@ -1,0 +1,5 @@
+@model IReadOnlyList<Kanban.Web.Pages.ColumnModel>
+@foreach (var column in Model)
+{
+    <partial name="_Column" model="column" />
+}
