@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{49DD6FF6
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kanban.Core.Tests", "tests\Kanban.Core.Tests\Kanban.Core.Tests.csproj", "{10E92E75-3077-4D19-BA40-41B7F46CFF3F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kanban.Web", "src\Kanban.Web\Kanban.Web.csproj", "{497B42A9-9B6E-4394-8E29-D645CC582484}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,9 +30,14 @@ Global
 		{10E92E75-3077-4D19-BA40-41B7F46CFF3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10E92E75-3077-4D19-BA40-41B7F46CFF3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10E92E75-3077-4D19-BA40-41B7F46CFF3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{497B42A9-9B6E-4394-8E29-D645CC582484}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{497B42A9-9B6E-4394-8E29-D645CC582484}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{497B42A9-9B6E-4394-8E29-D645CC582484}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{497B42A9-9B6E-4394-8E29-D645CC582484}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{1C0EDCC3-6AAA-4E59-BF87-41888ADBC52F} = {EB618093-ABE1-45B9-86E5-2D9C1516CE76}
 		{10E92E75-3077-4D19-BA40-41B7F46CFF3F} = {49DD6FF6-F582-4AF6-84A2-8C46EB08E149}
+		{497B42A9-9B6E-4394-8E29-D645CC582484} = {EB618093-ABE1-45B9-86E5-2D9C1516CE76}
 	EndGlobalSection
 EndGlobal

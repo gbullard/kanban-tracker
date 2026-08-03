@@ -1,0 +1,23 @@
+@page
+@model Kanban.Web.Pages.IndexModel
+@{ ViewData["Title"] = "Board"; }
+
+@section Toolbar {
+    <form method="get" style="display:flex;gap:.5rem;align-items:center">
+        <select name="ProjectId" onchange="this.form.submit()">
+            <option value="">All projects</option>
+            @foreach (var p in Model.Projects)
+            {
+                <option value="@p.Id" selected="@(Model.ProjectId == p.Id)">@p.Name</option>
+            }
+        </select>
+    </form>
+    <a href="/Cards/Edit">+ New card</a>
+}
+
+<div class="board">
+    @foreach (var column in Model.Columns)
+    {
+        <partial name="_Column" model="column" />
+    }
+</div>

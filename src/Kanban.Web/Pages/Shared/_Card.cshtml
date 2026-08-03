@@ -1,0 +1,11 @@
+@model Kanban.Core.Entities.Card
+<div class="card" data-card-id="@Model.Id">
+    <a class="title" href="/Cards/Detail?id=@Model.Id">@Model.Title</a>
+    <div class="meta">
+        @Model.Project?.Name
+        @if (Model.Outcome is not null)
+        {
+            <span class="badge @Model.Outcome.ToString()!.ToLowerInvariant()">@Model.Outcome</span>
+        }
+    </div>
+</div>

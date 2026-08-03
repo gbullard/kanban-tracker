@@ -1,0 +1,24 @@
+:root {
+  --tn-bg:        #1a1b26;
+  --tn-surface:   #24283b;
+  --tn-raised:    #292e42;
+  --tn-border:    #3b4261;
+  --tn-fg:        #c0caf5;
+  --tn-muted:     #565f89;
+  --tn-blue:      #7aa2f7;
+  --tn-cyan:      #7dcfff;
+  --tn-green:     #9ece6a;
+  --tn-magenta:   #bb9af7;
+  --tn-orange:    #ff9e64;
+  --tn-red:       #f7768e;
+  --tn-yellow:    #e0af68;
+
+  --col-new:        var(--tn-muted);
+  --col-ready:      var(--tn-blue);
+  --col-inprogress: var(--tn-orange);
+  --col-review:     var(--tn-magenta);
+  --col-completed:  var(--tn-green);
+
+  --outcome-succeeded: var(--tn-green);
+  --outcome-failed:    var(--tn-red);
+}

@@ -1,0 +1,102 @@
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--tn-bg);
+  color: var(--tn-fg);
+  font: 15px/1.5 "Segoe UI", system-ui, sans-serif;
+}
+
+a { color: var(--tn-blue); }
+
+header.topbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--tn-surface);
+  border-bottom: 1px solid var(--tn-border);
+}
+
+header.topbar h1 { font-size: 1.05rem; margin: 0; font-weight: 600; }
+
+select, input, textarea, button {
+  background: var(--tn-raised);
+  color: var(--tn-fg);
+  border: 1px solid var(--tn-border);
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
+  font: inherit;
+}
+
+button { cursor: pointer; }
+button:hover { border-color: var(--tn-blue); }
+
+.board {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  align-items: flex-start;
+  overflow-x: auto;
+}
+
+.column {
+  background: var(--tn-surface);
+  border: 1px solid var(--tn-border);
+  border-radius: 10px;
+  min-width: 270px;
+  flex: 1 0 270px;
+  display: flex;
+  flex-direction: column;
+}
+
+.column > h2 {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  margin: 0;
+  padding: 0.7rem 0.85rem;
+  border-bottom: 1px solid var(--tn-border);
+  border-top: 3px solid var(--column-accent);
+  border-radius: 10px 10px 0 0;
+  color: var(--column-accent);
+}
+
+.column[data-status="New"]        { --column-accent: var(--col-new); }
+.column[data-status="Ready"]      { --column-accent: var(--col-ready); }
+.column[data-status="InProgress"] { --column-accent: var(--col-inprogress); }
+.column[data-status="Review"]     { --column-accent: var(--col-review); }
+.column[data-status="Completed"]  { --column-accent: var(--col-completed); }
+
+.cards { padding: 0.6rem; display: flex; flex-direction: column; gap: 0.6rem; min-height: 60px; }
+
+.card {
+  background: var(--tn-raised);
+  border: 1px solid var(--tn-border);
+  border-left: 3px solid var(--column-accent);
+  border-radius: 8px;
+  padding: 0.6rem 0.7rem;
+  cursor: grab;
+}
+
+.card:hover { border-color: var(--tn-blue); }
+.card .title { font-weight: 600; display: block; color: var(--tn-fg); text-decoration: none; }
+.card .meta { color: var(--tn-muted); font-size: 0.78rem; margin-top: 0.3rem; }
+
+.badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 4px;
+  border: 1px solid currentColor;
+}
+
+.badge.succeeded { color: var(--outcome-succeeded); }
+.badge.failed    { color: var(--outcome-failed); }
+
+/* Dragging into or out of InProgress is rejected server-side; this is the visual cue. */
+.column[data-status="InProgress"] .card { cursor: default; }
+
+@media (max-width: 700px) {
+  .column { min-width: 82vw; flex-basis: 82vw; }
+}

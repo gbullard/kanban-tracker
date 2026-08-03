@@ -1,0 +1,10 @@
+@model Kanban.Web.Pages.ColumnModel
+<div class="column" data-status="@Model.Status" id="column-@Model.Status">
+    <h2>@Model.Heading (@Model.Cards.Count)</h2>
+    <div class="cards" data-status="@Model.Status">
+        @foreach (var card in Model.Cards)
+        {
+            <partial name="_Card" model="card" />
+        }
+    </div>
+</div>
