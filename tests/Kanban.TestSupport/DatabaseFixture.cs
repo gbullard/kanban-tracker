@@ -2,7 +2,7 @@ using Kanban.Core;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
-namespace Kanban.Core.Tests;
+namespace Kanban.TestSupport;
 
 /// <summary>
 /// Tests run against a real SQL Server database because the board's behaviour depends on
@@ -11,13 +11,23 @@ namespace Kanban.Core.Tests;
 /// </summary>
 public class DatabaseFixture : IAsyncLifetime
 {
-    public const string ConnectionString =
-        "Server=localhost;Database=KanbanBoard_Test;Trusted_Connection=True;TrustServerCertificate=True";
+    private readonly string _connectionString;
+
+    public string ConnectionString => _connectionString;
+
+    public DatabaseFixture()
+    {
+        // Each test assembly gets its own database so the two projects never collide.
+        var suffix = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name?.Replace(".", "_")
+                     ?? "Default";
+        _connectionString =
+            $"Server=localhost;Database=KanbanBoard_Test_{suffix};Trusted_Connection=True;TrustServerCertificate=True";
+    }
 
     public KanbanDbContext CreateContext()
     {
         var options = new DbContextOptionsBuilder<KanbanDbContext>()
-            .UseSqlServer(ConnectionString)
+            .UseSqlServer(_connectionString)
             .Options;
         return new KanbanDbContext(options);
     }
@@ -38,6 +48,3 @@ public class DatabaseFixture : IAsyncLifetime
 
     public Task DisposeAsync() => Task.CompletedTask;
 }
-
-[CollectionDefinition("database")]
-public class DatabaseCollection : ICollectionFixture<DatabaseFixture> { }
