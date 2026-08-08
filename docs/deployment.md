@@ -42,3 +42,56 @@ ALTER ROLE db_datawriter ADD MEMBER [IIS APPPOOL\Kanban];
 ```
 
 Then browse from any LAN device to `http://<host-name>:8080`.
+
+## Runner service
+
+The Runner runs as a Windows Service. Publish first, then install once, as administrator:
+
+```powershell
+.\build\build.ps1 -Task Publish
+New-Item -ItemType Directory -Force -Path C:\Services\KanbanRunner
+robocopy C:\repos\_artifacts\kanban\publish\Kanban.Runner C:\Services\KanbanRunner /MIR
+New-Service -Name KanbanRunner `
+            -DisplayName "Kanban Runner" `
+            -BinaryPathName "C:\Services\KanbanRunner\Kanban.Runner.exe" `
+            -StartupType Automatic
+Start-Service KanbanRunner
+```
+
+### Service account
+
+The service runs as LocalSystem by default. It needs two things LocalSystem may not have:
+
+1. **Access to your project directories and their git repositories.** LocalSystem has broad local
+   rights but no user profile, so `git` may not find a global identity. Give the service its own:
+
+   ```powershell
+   git config --system user.name  "Kanban Runner"
+   git config --system user.email "runner@localhost"
+   ```
+
+2. **Crush's OpenRouter configuration.** Crush reads its key from the *service account's* environment
+   or profile, not yours. Either set the key as a machine-level environment variable, or run the
+   service as your own account:
+
+   ```powershell
+   # Machine-level so LocalSystem sees it. Restart the service afterwards.
+   [Environment]::SetEnvironmentVariable('OPENROUTER_API_KEY', '<key>', 'Machine')
+   ```
+
+   Running as your own user is usually simpler, because Crush's config file lives in your profile.
+   Set it in `services.msc` → Kanban Runner → Log On, or:
+
+   ```powershell
+   sc.exe config KanbanRunner obj= ".\YourUserName" password= "YourPassword"
+   ```
+
+### Logs
+
+The service writes to the Windows Application event log under source `Kanban Runner`:
+
+```powershell
+Get-EventLog -LogName Application -Source "Kanban Runner" -Newest 20
+```
+
+Per-card logs live in the database and are visible on each card.

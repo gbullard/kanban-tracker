@@ -6,12 +6,15 @@ param(
     [string] $Configuration = 'Release',
     [string] $ArtifactsPath = 'C:\repos\_artifacts\kanban',
     [string] $SitePath      = 'C:\inetpub\kanban',
-    [string] $AppPoolName   = 'Kanban'
+    [string] $AppPoolName   = 'Kanban',
+    [string] $RunnerPath    = 'C:\Services\KanbanRunner',
+    [string] $RunnerService = 'KanbanRunner'
 )
 
 $ErrorActionPreference = 'Stop'
 $repo = Split-Path -Parent $PSScriptRoot
 $publishWeb = Join-Path $ArtifactsPath 'publish\Kanban.Web'
+$publishRunner = Join-Path $ArtifactsPath 'publish\Kanban.Runner'
 
 function Invoke-Step([string] $name, [scriptblock] $body) {
     Write-Host "==> $name" -ForegroundColor Cyan
@@ -43,6 +46,10 @@ function Step-Publish {
         dotnet publish (Join-Path $repo 'src\Kanban.Web\Kanban.Web.csproj') `
             -c $Configuration --no-build -o $publishWeb
     }
+    Invoke-Step 'Publish Kanban.Runner' {
+        dotnet publish (Join-Path $repo 'src\Kanban.Runner\Kanban.Runner.csproj') `
+            -c $Configuration --no-build -o $publishRunner
+    }
 }
 
 function Step-Deploy {
@@ -67,14 +74,34 @@ function Step-Deploy {
     }
 }
 
+function Step-DeployRunner {
+    Invoke-Step 'Deploy Kanban.Runner' {
+        $service = Get-Service -Name $RunnerService -ErrorAction SilentlyContinue
+
+        if ($service -and $service.Status -ne 'Stopped') {
+            Stop-Service -Name $RunnerService
+            # The service holds its DLLs open until the process actually exits.
+            (Get-Service $RunnerService).WaitForStatus('Stopped', '00:00:30')
+        }
+
+        New-Item -ItemType Directory -Force -Path $RunnerPath | Out-Null
+        robocopy $publishRunner $RunnerPath /MIR /NJH /NJS /NP /NDL | Out-Null
+        if ($LASTEXITCODE -ge 8) { throw "robocopy failed with exit code $LASTEXITCODE" }
+        $global:LASTEXITCODE = 0
+
+        if ($service) { Start-Service -Name $RunnerService }
+        else { Write-Warning "Service '$RunnerService' is not installed. See docs/deployment.md." }
+    }
+}
+
 switch ($Task) {
     'Clean'   { Step-Clean }
     'Restore' { Step-Restore }
     'Build'   { Step-Restore; Step-Build }
     'Test'    { Step-Restore; Step-Build; Step-Test }
     'Publish' { Step-Restore; Step-Build; Step-Test; Step-Publish }
-    'Deploy'  { Step-Deploy }
-    'All'     { Step-Clean; Step-Restore; Step-Build; Step-Test; Step-Publish; Step-Deploy }
+    'Deploy'  { Step-Deploy; Step-DeployRunner }
+    'All'     { Step-Clean; Step-Restore; Step-Build; Step-Test; Step-Publish; Step-Deploy; Step-DeployRunner }
 }
 
 Write-Host "Done: $Task" -ForegroundColor Green
