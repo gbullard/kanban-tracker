@@ -4,15 +4,16 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>@ViewData["Title"] — Kanban</title>
-    <link rel="stylesheet" href="~/css/tokyonight.css" />
+    <link id="theme-link" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/board.css" />
+    <script src="~/js/theme.js"></script>
 </head>
 <body>
     <header class="topbar">
         <h1><a href="/">Kanban</a></h1>
         @await RenderSectionAsync("Toolbar", required: false)
         <span style="flex:1"></span>
-        <a href="/Projects">Projects</a>
+        <a href="/Settings" title="Settings">&#9881;</a>
     </header>
     @RenderBody()
     <script src="~/lib/htmx/htmx.min.js"></script>
