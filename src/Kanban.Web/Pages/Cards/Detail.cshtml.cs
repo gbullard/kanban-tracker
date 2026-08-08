@@ -25,6 +25,36 @@ public class DetailModel : PageModel
     public Card Card { get; private set; } = null!;
     public string? Error { get; private set; }
 
+    public Run? LatestRun { get; private set; }
+    public IReadOnlyList<RunLogLine> LogLines { get; private set; } = Array.Empty<RunLogLine>();
+
+    private async Task LoadLatestRunAsync(CancellationToken ct)
+    {
+        LatestRun = await _db.Runs.AsNoTracking()
+            .Where(r => r.CardId == Id)
+            .OrderByDescending(r => r.Id)
+            .FirstOrDefaultAsync(ct);
+
+        if (LatestRun is not null)
+        {
+            LogLines = await _db.RunLogLines.AsNoTracking()
+                .Where(l => l.RunId == LatestRun.Id)
+                .OrderBy(l => l.Seq)
+                .ToListAsync(ct);
+        }
+    }
+
+    /// <summary>Returns just the log panel, which htmx swaps in place while a run is live.</summary>
+    public async Task<IActionResult> OnGetLogAsync(CancellationToken ct)
+    {
+        var card = await _db.Cards.AsNoTracking().FirstOrDefaultAsync(c => c.Id == Id, ct);
+        if (card is null) return NotFound();
+
+        Card = card;
+        await LoadLatestRunAsync(ct);
+        return Partial("_RunLog", this);
+    }
+
     public async Task<IActionResult> OnGetAsync(CancellationToken ct)
     {
         var card = await _db.Cards.AsNoTracking()
@@ -36,6 +66,7 @@ public class DetailModel : PageModel
 
         card.Notes = card.Notes.OrderBy(n => n.CreatedUtc).ThenBy(n => n.Id).ToList();
         Card = card;
+        await LoadLatestRunAsync(ct);
         return Page();
     }
 

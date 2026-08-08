@@ -1,0 +1,59 @@
+@model Kanban.Web.Pages.Cards.DetailModel
+@{
+    var live = Model.Card.Status == Kanban.Core.Enums.CardStatus.InProgress;
+}
+
+@* Attributes are always emitted and the trigger is switched instead. Building an attribute
+   name conditionally inside a tag makes Razor HTML-encode it into text, not markup. *@
+<div id="runlog"
+     hx-get="/Cards/Detail?id=@Model.Card.Id&handler=Log"
+     hx-trigger="@(live ? "every 2s" : "none")"
+     hx-swap="outerHTML">
+
+    @if (Model.LatestRun is null)
+    {
+        <p style="color:var(--tn-muted)">This card has not been run yet.</p>
+    }
+    else
+    {
+        <p style="color:var(--tn-muted)">
+            Run @Model.LatestRun.Id ·
+            started @Model.LatestRun.StartedUtc.ToLocalTime().ToString("g")
+            @if (Model.LatestRun.EndedUtc is not null)
+            {
+                <text>· finished @Model.LatestRun.EndedUtc.Value.ToLocalTime().ToString("g")</text>
+            }
+            else
+            {
+                <text>· <span style="color:var(--tn-orange)">running</span></text>
+            }
+            @if (Model.LatestRun.FilesChanged is not null)
+            {
+                <text>
+                    · @Model.LatestRun.FilesChanged files,
+                    <span style="color:var(--tn-green)">+@Model.LatestRun.Insertions</span>
+                    <span style="color:var(--tn-red)">-@Model.LatestRun.Deletions</span>
+                </text>
+            }
+        </p>
+
+        @if (Model.LatestRun.FailureReason is not null)
+        {
+            <p style="color:var(--tn-red)">@Model.LatestRun.FailureReason</p>
+        }
+
+        <pre style="background:var(--tn-bg);border:1px solid var(--tn-border);border-radius:8px;padding:.75rem;max-height:26rem;overflow:auto;font-size:.82rem;white-space:pre-wrap">@foreach (var line in Model.LogLines)
+{
+    if (line.Stream == Kanban.Core.Enums.LogStream.Stderr)
+    {
+        <span style="color:var(--tn-red)">@line.Text
+</span>
+    }
+    else
+    {
+        <text>@line.Text
+</text>
+    }
+}</pre>
+    }
+</div>

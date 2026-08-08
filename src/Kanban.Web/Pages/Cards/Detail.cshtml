@@ -24,6 +24,9 @@
         <pre style="white-space:pre-wrap;background:var(--tn-surface);border:1px solid var(--tn-border);border-radius:8px;padding:.75rem">@Model.Card.Description</pre>
     }
 
+    <h3>Latest run</h3>
+    <partial name="_RunLog" model="Model" />
+
     <h3>Notes</h3>
     @if (Model.Card.Notes.Count == 0)
     {
