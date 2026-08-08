@@ -54,11 +54,11 @@ public class CrushAgentProcess : IAgentProcess
         // A single lock serialises the two reader threads so log lines keep their
         // real interleaving and the sequence numbers assigned downstream are stable.
         var writeLock = new SemaphoreSlim(1, 1);
+        var stdoutDone = new TaskCompletionSource();
+        var stderrDone = new TaskCompletionSource();
 
-        async void Handle(LogStream stream, string? text)
+        async Task WriteLineAsync(LogStream stream, string text)
         {
-            if (text is null) return;
-
             await writeLock.WaitAsync(CancellationToken.None);
             try
             {
@@ -70,8 +70,17 @@ public class CrushAgentProcess : IAgentProcess
             }
         }
 
-        process.OutputDataReceived += (_, e) => Handle(LogStream.Stdout, e.Data);
-        process.ErrorDataReceived += (_, e) => Handle(LogStream.Stderr, e.Data);
+        process.OutputDataReceived += (_, e) =>
+        {
+            if (e.Data is null) { stdoutDone.TrySetResult(); return; }
+            _ = WriteLineAsync(LogStream.Stdout, e.Data);
+        };
+
+        process.ErrorDataReceived += (_, e) =>
+        {
+            if (e.Data is null) { stderrDone.TrySetResult(); return; }
+            _ = WriteLineAsync(LogStream.Stderr, e.Data);
+        };
 
         process.Start();
         process.BeginOutputReadLine();
@@ -99,6 +108,11 @@ public class CrushAgentProcess : IAgentProcess
         // WaitForExitAsync can return before the async readers have drained. The
         // synchronous overload flushes them.
         process.WaitForExit();
+
+        // Ensure all async reader callbacks have completed.
+        await Task.WhenAll(stdoutDone.Task, stderrDone.Task);
+        await writeLock.WaitAsync(CancellationToken.None);
+        writeLock.Release();
 
         return new AgentExecution(process.ExitCode, TimedOut: false);
     }
