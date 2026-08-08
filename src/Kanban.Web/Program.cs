@@ -4,8 +4,14 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var connectionString = builder.Configuration.GetConnectionString("Kanban")!;
 builder.Services.AddDbContext<KanbanDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("Kanban")));
+{
+    if (connectionString.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+        options.UseSqlite(connectionString);
+    else
+        options.UseSqlServer(connectionString);
+});
 builder.Services.AddScoped<BoardService>();
 builder.Services.AddAntiforgery(o => o.HeaderName = "RequestVerificationToken");
 builder.Services.AddRazorPages();
