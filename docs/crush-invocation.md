@@ -8,8 +8,8 @@ Crush version: v0.68.0
 Executable: `crush` (on PATH)
 Arguments:  `run "{prompt}"`
 Prompt delivered via: positional argument (also accepts additional context on stdin)
-Auto-approve flag: `-y` / `--yolo`
-Plain-output flag: none needed
+Auto-approve flag: none (the top-level `--yolo` / `-y` is not accepted by the `run` subcommand; non-interactive mode skips permission prompts by design)
+Plain-output flag: `--quiet` / `-q` (hides the spinner)
 
 ## Exit code behaviour
 
@@ -19,7 +19,7 @@ Plain-output flag: none needed
 
 ## Output characteristics
 
-- Writes ANSI escape sequences to a captured pipe: no
+- Writes ANSI escape sequences to a captured pipe: no (observed clean short messages; use `--quiet` to suppress spinner)
 - Approximate lines of output for a small task: 1–2
 
 ## Configuration
