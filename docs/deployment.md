@@ -1,3 +1,32 @@
+# Quick Start (Local Development)
+
+## Prerequisites
+
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- SQL Server (any edition) or SQLite
+
+## Steps
+
+```powershell
+$env:KANBAN_CONNECTION_STRING = "Server=localhost;Database=KanbanBoard;Trusted_Connection=True;TrustServerCertificate=True"
+dotnet restore Kanban.sln
+dotnet build Kanban.sln
+dotnet ef database update --project src/Kanban.Core --startup-project src/Kanban.Web
+dotnet run --project src/Kanban.Web
+```
+
+Open `http://localhost:28763`.
+
+To run the AI runner:
+
+```powershell
+dotnet run --project src/Kanban.Runner
+```
+
+The runner needs [Crush](https://github.com/crush-ai/crush) installed and configured. See the full deployment guide below for production setup.
+
+---
+
 # Deployment
 
 One-time setup on the Windows 11 host.
