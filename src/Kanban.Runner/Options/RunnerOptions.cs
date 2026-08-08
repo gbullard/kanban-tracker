@@ -11,12 +11,11 @@ public class RunnerOptions
     public string AgentCommand { get; set; } = "crush";
 
     /// <summary>
-    /// Argument template. The token {prompt} is replaced with the composed prompt text.
-    /// Ignored when AgentPromptViaStdin is true.
+    /// Argument template. The token {promptFile} is replaced with the path to the prompt file.
     /// </summary>
-    public string AgentArgumentTemplate { get; set; } = "run \"{prompt}\"";
+    public string AgentArgumentTemplate { get; set; } = "run";
 
-    public bool AgentPromptViaStdin { get; set; }
+    public bool AgentPromptViaStdin { get; set; } = true;
 
     public int LogFlushIntervalMs { get; set; } = 1000;
 

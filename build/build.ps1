@@ -4,15 +4,17 @@ param(
     [string] $Task = 'All',
 
     [string] $Configuration = 'Release',
-    [string] $ArtifactsPath = 'C:\repos\_artifacts\kanban',
-    [string] $SitePath      = 'C:\inetpub\kanban',
+    [string] $ArtifactsPath = '',
+    [string] $SitePath      = '',
     [string] $AppPoolName   = 'Kanban',
-    [string] $RunnerPath    = 'C:\Services\KanbanRunner',
+    [string] $RunnerPath    = '',
     [string] $RunnerService = 'KanbanRunner'
 )
 
 $ErrorActionPreference = 'Stop'
 $repo = Split-Path -Parent $PSScriptRoot
+
+if (-not $PSBoundParameters.ContainsKey('ArtifactsPath')) { $ArtifactsPath = Join-Path $repo 'artifacts' }
 $publishWeb = Join-Path $ArtifactsPath 'publish\Kanban.Web'
 $publishRunner = Join-Path $ArtifactsPath 'publish\Kanban.Runner'
 
