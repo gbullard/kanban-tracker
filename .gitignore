@@ -6,6 +6,11 @@ artifacts/
 *.suo
 appsettings.*.local.json
 .kanban/
+.crush/
+.superpowers/
+devbuild.ps1
 docs/*
 !docs/deployment.md
-.crush/
+!docs/setup.md
+!docs/testing.md
+!docs/screenshot.png
