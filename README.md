@@ -1,4 +1,4 @@
-# Kanban Tracker
+# Kanban for Crush
 
 An AI-powered kanban board for managing development tasks. Drag cards between columns, and an AI agent runner picks up "Ready" cards, creates git branches, runs [Crush](https://github.com/charmbracelet/crush) to implement them, and reports results — all with live log streaming.
 
