@@ -15,13 +15,10 @@ public class DatabaseFixture : IAsyncLifetime
 
     public string ConnectionString => _connectionString;
 
-    public DatabaseFixture()
+    protected DatabaseFixture(string databaseSuffix)
     {
-        // Each test assembly gets its own database so the two projects never collide.
-        var suffix = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name?.Replace(".", "_")
-                     ?? "Default";
         _connectionString =
-            $"Server=localhost;Database=KanbanBoard_Test_{suffix};Trusted_Connection=True;TrustServerCertificate=True";
+            $"Server=localhost;Database=KanbanBoard_Test_{databaseSuffix};Trusted_Connection=True;TrustServerCertificate=True";
     }
 
     public KanbanDbContext CreateContext()

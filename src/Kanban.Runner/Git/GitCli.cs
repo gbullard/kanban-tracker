@@ -9,7 +9,7 @@ public class GitCli : IGitOperations
 
     private static async Task<GitResult> RunAsync(string path, string arguments, CancellationToken ct)
     {
-        var psi = new ProcessStartInfo("git", arguments)
+        var psi = new ProcessStartInfo("git", $"-c safe.directory={path} {arguments}")
         {
             WorkingDirectory = path,
             UseShellExecute = false,

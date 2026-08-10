@@ -1,6 +1,7 @@
 using Kanban.Core.Enums;
 using Kanban.Runner.Agents;
 using Kanban.Runner.Options;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Xunit;
 
@@ -31,7 +32,7 @@ public class CrushAgentProcessTests : IDisposable
             PromptDirectory = Path.Combine(Path.GetTempPath(), "kanban-prompts")
         };
 
-        return new CrushAgentProcess(Microsoft.Extensions.Options.Options.Create(options));
+        return new CrushAgentProcess(Microsoft.Extensions.Options.Options.Create(options), NullLogger<CrushAgentProcess>.Instance);
     }
 
     [Fact]

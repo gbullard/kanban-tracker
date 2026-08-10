@@ -1,5 +1,8 @@
+using Kanban.Core;
+using Kanban.Core.Enums;
 using Kanban.Runner.Options;
 using Kanban.Runner.Persistence;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace Kanban.Runner;
@@ -55,11 +58,31 @@ public class Worker : BackgroundService
             }
             catch (Exception ex)
             {
-                // Never let one bad card stop the loop. The card is left in InProgress and
-                // the next startup reconciliation will move it to Review as failed.
-                _log.LogError(ex, "Unhandled error in the poll loop. Continuing.");
+                _log.LogError(ex, "Unhandled error in the poll loop. Returning card to Ready.");
+                await ReturnCardToReadyAsync(ex);
                 await Task.Delay(interval, stoppingToken);
             }
+        }
+    }
+
+    private async Task ReturnCardToReadyAsync(Exception ex)
+    {
+        try
+        {
+            await using var scope = _scopes.CreateAsyncScope();
+            var db = scope.ServiceProvider.GetRequiredService<KanbanDbContext>();
+            var card = await db.Cards.FirstOrDefaultAsync(c => c.Status == CardStatus.InProgress);
+            if (card is not null)
+            {
+                card.Status = CardStatus.Ready;
+                card.UpdatedUtc = DateTime.UtcNow;
+                await db.SaveChangesAsync();
+                _log.LogWarning("Returned card {CardId} to Ready after error.", card.Id);
+            }
+        }
+        catch (Exception recoveryEx)
+        {
+            _log.LogError(recoveryEx, "Failed to return card to Ready.");
         }
     }
 }

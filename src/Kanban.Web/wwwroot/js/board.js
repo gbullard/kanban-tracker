@@ -15,33 +15,38 @@
   }
 
   async function move(cardId, targetStatus, ids, note) {
-    const response = await fetch("/?handler=Move", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "RequestVerificationToken": token()
-      },
-      body: JSON.stringify({
-        cardId: cardId,
-        targetStatus: targetStatus,
-        orderedCardIds: ids,
-        note: note
-      })
-    });
+    try {
+      const response = await fetch("/?handler=Move", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "RequestVerificationToken": token()
+        },
+        body: JSON.stringify({
+          cardId: cardId,
+          targetStatus: targetStatus,
+          orderedCardIds: ids,
+          note: note,
+          projectId: (function () {
+            var m = window.location.search.match(/[?&]ProjectId=(\d+)/);
+            return m ? parseInt(m[1], 10) : null;
+          })()
+        })
+      });
 
-    if (!response.ok) {
-      alert(await response.text());
+      if (!response.ok) {
+        const errorText = await response.text();
+        alert(errorText);
+        window.location.reload();
+        return;
+      }
+
+      board.innerHTML = await response.text();
+      wire();
+    } catch (err) {
+      console.error("Move failed", err);
+      window.location.reload();
     }
-
-    // Re-render from the server either way. On success it shows the new state;
-    // on rejection it snaps the card back to where the server says it belongs.
-    board.innerHTML = response.ok
-      ? await response.text()
-      : (await (await fetch(window.location.href)).text())
-          .split('<div class="board" id="board">')[1]
-          .split("</div>\n\n")[0];
-
-    wire();
   }
 
   function onDrop(evt) {
@@ -63,20 +68,29 @@
     move(cardId, targetStatus, ids, note);
   }
 
+  var sortables = [];
+
   function wire() {
+    sortables.forEach(function (s) {
+      try { s.destroy(); } catch (e) { /* ignore */ }
+    });
+    sortables = [];
+
     board.querySelectorAll(".cards").forEach(function (list) {
       // In Progress belongs to the Runner. Cards there are not draggable and
       // nothing may be dropped into it. The server enforces this too.
       const locked = list.dataset.status === "InProgress";
-      Sortable.create(list, {
+      sortables.push(Sortable.create(list, {
         group: { name: "board", pull: !locked, put: !locked },
         animation: 120,
         sort: !locked,
         ghostClass: "dragging",
         onEnd: onDrop
-      });
+      }));
     });
   }
 
   wire();
+
+  board.addEventListener("htmx:afterSettle", wire);
 })();

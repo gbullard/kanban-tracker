@@ -1,6 +1,7 @@
 using Kanban.Core.Entities;
 using Kanban.Core.Enums;
 using Kanban.Runner;
+using Kanban.Runner.Tests.Fakes;
 using Kanban.TestSupport;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -11,9 +12,9 @@ namespace Kanban.Runner.Tests;
 [Collection("database")]
 public class StartupReconcilerTests
 {
-    private readonly DatabaseFixture _fixture;
+    private readonly RunnerDatabaseFixture _fixture;
 
-    public StartupReconcilerTests(DatabaseFixture fixture) => _fixture = fixture;
+    public StartupReconcilerTests(RunnerDatabaseFixture fixture) => _fixture = fixture;
 
     private async Task<int> SeedAsync(CardStatus status, bool withUnfinishedRun)
     {

@@ -15,10 +15,10 @@ namespace Kanban.Runner.Tests;
 [Collection("database")]
 public class CardRunnerTests : IDisposable
 {
-    private readonly DatabaseFixture _fixture;
+    private readonly RunnerDatabaseFixture _fixture;
     private readonly string _projectDir;
 
-    public CardRunnerTests(DatabaseFixture fixture)
+    public CardRunnerTests(RunnerDatabaseFixture fixture)
     {
         _fixture = fixture;
         _projectDir = Path.Combine(Path.GetTempPath(), "kanban-proj-" + Guid.NewGuid().ToString("N")[..8]);

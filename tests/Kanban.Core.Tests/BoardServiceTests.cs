@@ -10,9 +10,9 @@ namespace Kanban.Core.Tests;
 [Collection("database")]
 public class BoardServiceTests
 {
-    private readonly DatabaseFixture _fixture;
+    private readonly CoreDatabaseFixture _fixture;
 
-    public BoardServiceTests(DatabaseFixture fixture) => _fixture = fixture;
+    public BoardServiceTests(CoreDatabaseFixture fixture) => _fixture = fixture;
 
     private async Task<(int projectId, int[] cardIds)> SeedAsync(params CardStatus[] statuses)
     {

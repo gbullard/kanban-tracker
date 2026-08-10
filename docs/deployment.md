@@ -15,7 +15,7 @@ dotnet ef database update --project src/Kanban.Core --startup-project src/Kanban
 dotnet run --project src/Kanban.Web
 ```
 
-Open `http://localhost:28763`.
+Open `http://localhost:28763` (the default dev port; change in `launchSettings.json` or pass `--urls` to override).
 
 To run the AI runner:
 
@@ -79,7 +79,7 @@ The Runner runs as a Windows Service. Publish first, then install once, as admin
 ```powershell
 .\build\build.ps1 -Task Publish
 New-Item -ItemType Directory -Force -Path C:\Services\KanbanRunner
-robocopy C:\repos\_artifacts\kanban\publish\Kanban.Runner C:\Services\KanbanRunner /MIR
+robocopy .\artifacts\publish\Kanban.Runner C:\Services\KanbanRunner /MIR
 New-Service -Name KanbanRunner `
             -DisplayName "Kanban Runner" `
             -BinaryPathName "C:\Services\KanbanRunner\Kanban.Runner.exe" `
@@ -114,6 +114,16 @@ The service runs as LocalSystem by default. It needs two things LocalSystem may 
    ```powershell
    sc.exe config KanbanRunner obj= ".\YourUserName" password= "YourPassword"
    ```
+
+3. **The `crush` executable.** LocalSystem does not have your user PATH. The `AgentCommand` setting
+   in `appsettings.json` must be an absolute path:
+
+   ```json
+   "AgentCommand": "C:\\Users\\Admin\\AppData\\Roaming\\npm\\crush.cmd"
+   ```
+
+   Find your crush path with `where crush` in your own terminal, then update the config before
+   deploying. If you run the service as your own user (step 2 above), just `"crush"` works.
 
 ### Logs
 

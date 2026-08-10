@@ -8,8 +8,13 @@ namespace Kanban.Runner.Agents;
 public class CrushAgentProcess : IAgentProcess
 {
     private readonly RunnerOptions _options;
+    private readonly ILogger<CrushAgentProcess> _log;
 
-    public CrushAgentProcess(IOptions<RunnerOptions> options) => _options = options.Value;
+    public CrushAgentProcess(IOptions<RunnerOptions> options, ILogger<CrushAgentProcess> log)
+    {
+        _options = options.Value;
+        _log = log;
+    }
 
     public async Task<AgentExecution> RunAsync(
         AgentRequest request,
@@ -83,6 +88,7 @@ public class CrushAgentProcess : IAgentProcess
         };
 
         process.Start();
+        _log.LogInformation("Started {Command} {Args} in {Dir}.", _options.AgentCommand, psi.Arguments, request.WorkingDirectory);
         process.BeginOutputReadLine();
         process.BeginErrorReadLine();
 
@@ -92,14 +98,11 @@ public class CrushAgentProcess : IAgentProcess
             process.StandardInput.Close();
         }
 
-        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
-        timeout.CancelAfter(TimeSpan.FromMinutes(_options.AgentTimeoutMinutes));
+        var timeout = TimeSpan.FromMinutes(_options.AgentTimeoutMinutes);
+        var exitTask = process.WaitForExitAsync(CancellationToken.None);
+        var delayTask = Task.Delay(timeout, ct);
 
-        try
-        {
-            await process.WaitForExitAsync(timeout.Token);
-        }
-        catch (OperationCanceledException) when (!ct.IsCancellationRequested)
+        if (await Task.WhenAny(exitTask, delayTask) == delayTask)
         {
             KillTree(process);
             return new AgentExecution(-1, TimedOut: true);
@@ -108,9 +111,16 @@ public class CrushAgentProcess : IAgentProcess
         // WaitForExitAsync can return before the async readers have drained. The
         // synchronous overload flushes them.
         process.WaitForExit();
+        _log.LogInformation("Process exited with code {ExitCode}.", process.ExitCode);
 
-        // Ensure all async reader callbacks have completed.
-        await Task.WhenAll(stdoutDone.Task, stderrDone.Task);
+        // Ensure all async reader callbacks have completed, with a 30 s grace period.
+        var drainTimeout = Task.Delay(TimeSpan.FromSeconds(30), CancellationToken.None);
+        var drainTask = Task.WhenAll(stdoutDone.Task, stderrDone.Task);
+        if (await Task.WhenAny(drainTask, drainTimeout) == drainTimeout)
+        {
+            _log.LogWarning("Timed out waiting for stdout/stderr readers to drain.");
+        }
+
         await writeLock.WaitAsync(CancellationToken.None);
         writeLock.Release();
 

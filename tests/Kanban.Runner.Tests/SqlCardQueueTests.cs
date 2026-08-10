@@ -1,6 +1,7 @@
 using Kanban.Core.Entities;
 using Kanban.Core.Enums;
 using Kanban.Runner.Persistence;
+using Kanban.Runner.Tests.Fakes;
 using Kanban.TestSupport;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -10,9 +11,9 @@ namespace Kanban.Runner.Tests;
 [Collection("database")]
 public class SqlCardQueueTests
 {
-    private readonly DatabaseFixture _fixture;
+    private readonly RunnerDatabaseFixture _fixture;
 
-    public SqlCardQueueTests(DatabaseFixture fixture) => _fixture = fixture;
+    public SqlCardQueueTests(RunnerDatabaseFixture fixture) => _fixture = fixture;
 
     private async Task<int[]> SeedAsync(params (CardStatus Status, int Position)[] cards)
     {

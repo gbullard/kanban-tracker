@@ -4,7 +4,6 @@
 
 <div style="padding:1rem;max-width:900px">
     <p style="color:var(--tn-muted)">
-        <a href="/">&larr; Board</a> ·
         @Model.Card.Project?.Name ·
         @Model.Card.Status
         @if (Model.Card.Outcome is not null)
@@ -17,11 +16,25 @@
         }
     </p>
 
-    <h2>@Model.Card.Title <a href="/Cards/Edit?id=@Model.Card.Id" style="font-size:.8rem">edit</a></h2>
+    <h2>@Model.Card.Title <a href="/Cards/Edit?id=@Model.Card.Id" class="topbar-btn" title="Edit"><i class="nf nf-fa-pencil"></i></a></h2>
+
+    @if (Model.Card.Status == Kanban.Core.Enums.CardStatus.Completed)
+    {
+        <form method="post" asp-page-handler="Delete" asp-route-id="@Model.Id" style="margin-bottom:1rem" onsubmit="return confirm('Delete this card permanently?')">
+            <button type="submit" style="background:var(--tn-red);color:var(--tn-bg);border-color:var(--tn-red)"><i class="nf nf-fa-trash"></i> Delete</button>
+        </form>
+    }
 
     @if (!string.IsNullOrWhiteSpace(Model.Card.Description))
     {
         <pre style="white-space:pre-wrap;background:var(--tn-surface);border:1px solid var(--tn-border);border-radius:8px;padding:.75rem">@Model.Card.Description</pre>
+    }
+
+    @if (Model.Card.Status == Kanban.Core.Enums.CardStatus.New)
+    {
+        <form method="post" asp-page-handler="Ready" asp-route-id="@Model.Id" style="margin-bottom:1rem">
+            <button type="submit" style="background:var(--tn-green);color:var(--tn-bg);border-color:var(--tn-green)">Send to Ready</button>
+        </form>
     }
 
     <h3>Latest run</h3>
@@ -48,10 +61,10 @@
     <form method="post" style="display:flex;flex-direction:column;gap:.5rem;margin-top:1rem">
         <textarea asp-for="NoteBody" rows="4" placeholder="Add a note. Notes are included in the agent's next run."></textarea>
         <div style="display:flex;gap:.5rem">
-            <button type="submit" asp-page-handler="Note">Add note</button>
+            <button type="submit" asp-page-handler="Note" asp-route-id="@Model.Id">Add note</button>
             @if (Model.Card.Status == Kanban.Core.Enums.CardStatus.Review)
             {
-                <button type="submit" asp-page-handler="SendBack">Add note and send back to Ready</button>
+                <button type="submit" asp-page-handler="SendBack" asp-route-id="@Model.Id">Add note and send back to Ready</button>
             }
         </div>
     </form>

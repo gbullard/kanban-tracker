@@ -20,6 +20,12 @@ header.topbar {
 
 header.topbar h1 { font-size: 1.05rem; margin: 0; font-weight: 600; }
 
+.topbar-icon {
+  font-size: 1.25rem;
+  text-decoration: none;
+  line-height: 1;
+}
+
 select, input, textarea, button {
   background: var(--tn-raised);
   color: var(--tn-fg);
@@ -32,8 +38,22 @@ select, input, textarea, button {
 button { cursor: pointer; }
 button:hover { border-color: var(--tn-blue); }
 
+.topbar-btn {
+  font-size: 1.25rem;
+  line-height: 1;
+  padding: 0.1rem 0.4rem;
+  border-radius: 6px;
+  background: var(--tn-raised);
+  color: var(--tn-fg);
+  border: 1px solid var(--tn-border);
+  text-decoration: none;
+  cursor: pointer;
+}
+.topbar-btn:hover { border-color: var(--tn-blue); }
+
 .board {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(200px, 1fr));
   gap: 0.75rem;
   padding: 0.75rem;
   align-items: flex-start;
@@ -44,8 +64,7 @@ button:hover { border-color: var(--tn-blue); }
   background: var(--tn-surface);
   border: 1px solid var(--tn-border);
   border-radius: 10px;
-  min-width: 270px;
-  flex: 1 0 270px;
+  min-width: 0;
   display: flex;
   flex-direction: column;
 }
@@ -71,6 +90,7 @@ button:hover { border-color: var(--tn-blue); }
 .cards { padding: 0.6rem; display: flex; flex-direction: column; gap: 0.6rem; min-height: 60px; }
 
 .card {
+  position: relative;
   background: var(--tn-raised);
   border: 1px solid var(--tn-border);
   border-left: 3px solid var(--column-accent);
@@ -78,10 +98,26 @@ button:hover { border-color: var(--tn-blue); }
   padding: 0.6rem 0.7rem;
   cursor: grab;
 }
-
 .card:hover { border-color: var(--tn-blue); }
 .card .title { font-weight: 600; display: block; color: var(--tn-fg); text-decoration: none; }
-.card .meta { color: var(--tn-muted); font-size: 0.78rem; margin-top: 0.3rem; }
+.card .meta { color: var(--tn-muted); font-size: 0.78rem; margin-top: 0.3rem; padding-right: 1.4rem; }
+
+.card-remove {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  background: none;
+  border: none;
+  color: var(--tn-muted);
+  font-size: 0.85rem;
+  line-height: 1;
+  padding: 0.15rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+}
+.card:hover .card-remove { opacity: 1; }
+.card-remove:hover { color: #e5534b; }
 
 .badge {
   display: inline-block;
@@ -98,5 +134,5 @@ button:hover { border-color: var(--tn-blue); }
 .column[data-status="InProgress"] .card { cursor: default; }
 
 @media (max-width: 700px) {
-  .column { min-width: 82vw; flex-basis: 82vw; }
+  .board { grid-template-columns: minmax(82vw, 1fr); }
 }

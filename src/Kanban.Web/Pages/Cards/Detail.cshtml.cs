@@ -107,4 +107,40 @@ public class DetailModel : PageModel
 
         return RedirectToPage("/Index");
     }
+
+    public async Task<IActionResult> OnPostReadyAsync(CancellationToken ct)
+    {
+        var readyIds = await _db.Cards.AsNoTracking()
+            .Where(c => c.Status == CardStatus.Ready)
+            .OrderBy(c => c.Position)
+            .Select(c => c.Id)
+            .ToListAsync(ct);
+
+        readyIds.Add(Id);
+
+        var result = await _board.MoveAsync(Id, CardStatus.Ready, readyIds, null, ct);
+        if (!result.Success)
+        {
+            Error = result.Error;
+            return await OnGetAsync(ct);
+        }
+
+        return RedirectToPage("/Index");
+    }
+
+    public async Task<IActionResult> OnPostDeleteAsync(CancellationToken ct)
+    {
+        var card = await _db.Cards.FirstOrDefaultAsync(c => c.Id == Id, ct);
+        if (card is null) return NotFound();
+
+        if (card.Status != CardStatus.Completed)
+        {
+            Error = "Only completed cards can be deleted.";
+            return await OnGetAsync(ct);
+        }
+
+        _db.Cards.Remove(card);
+        await _db.SaveChangesAsync(ct);
+        return RedirectToPage("/Index");
+    }
 }

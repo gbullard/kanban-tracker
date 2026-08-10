@@ -12,11 +12,18 @@
             }
         </select>
     </form>
-    <a href="/Cards/Edit">+ New card</a>
+    <a href="/Cards/Edit" class="topbar-btn"><i class="nf nf-cod-diff_added"></i></a>
 }
 
 @Html.AntiForgeryToken()
-<div class="board" id="board">
+@{
+    var boardUrl = "/?handler=Board";
+    if (Model.ProjectId.HasValue)
+    {
+        boardUrl += $"&ProjectId={Model.ProjectId}";
+    }
+}
+<div class="board" id="board" hx-get="@boardUrl" hx-trigger="every 5s" hx-swap="innerHTML">
     <partial name="_Board" model="Model.Columns" />
 </div>
 

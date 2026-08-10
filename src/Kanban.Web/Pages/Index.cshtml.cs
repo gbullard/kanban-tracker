@@ -36,7 +36,7 @@ public class IndexModel : PageModel
         (CardStatus.Completed, "Completed")
     };
 
-    public record MoveRequest(int CardId, string TargetStatus, int[] OrderedCardIds, string? Note);
+    public record MoveRequest(int CardId, string TargetStatus, int[] OrderedCardIds, string? Note, int? ProjectId);
 
     public async Task<IActionResult> OnPostMoveAsync([FromBody] MoveRequest request, CancellationToken ct)
     {
@@ -51,7 +51,8 @@ public class IndexModel : PageModel
             return BadRequest(result.Error!);
         }
 
-        await OnGetAsync(ct);
+        ProjectId = request.ProjectId;
+        await LoadColumns(ct);
         return Partial("_Board", Columns);
     }
 
@@ -62,6 +63,18 @@ public class IndexModel : PageModel
             .OrderBy(p => p.Name)
             .ToListAsync(ct);
 
+        await LoadColumns(ct);
+    }
+
+    public async Task<IActionResult> OnGetBoardAsync(int? projectId, CancellationToken ct)
+    {
+        ProjectId = projectId;
+        await LoadColumns(ct);
+        return Partial("_Board", Columns);
+    }
+
+    private async Task LoadColumns(CancellationToken ct)
+    {
         var cards = await _board.GetBoardAsync(ProjectId, ct);
 
         Columns = Layout

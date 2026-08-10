@@ -8,6 +8,13 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = Host.CreateApplicationBuilder(args);
 
+if (OperatingSystem.IsWindows())
+{
+#pragma warning disable CA1416
+    builder.Logging.AddEventLog(o => o.SourceName = "Kanban Runner");
+#pragma warning restore CA1416
+}
+
 builder.Services.Configure<RunnerOptions>(builder.Configuration.GetSection(RunnerOptions.SectionName));
 
 var connectionString = builder.Configuration.GetConnectionString("Kanban")!;
